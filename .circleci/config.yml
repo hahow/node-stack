@@ -1,0 +1,18 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: ruby:2.5.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - setup_remote_docker
+      - run: bundle exec rspec
